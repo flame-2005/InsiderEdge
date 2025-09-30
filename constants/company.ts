@@ -48,14 +48,42 @@ export type BseInsiderTrade = {
 };
 
 export type NseInsiderTrade = {
-  symbol: string | null;
-  companyName: string | null;
-  acquirerOrDisposer: string | null;
-  regulation: string | null;
-  securityType: string | null;
-  quantity: number | null;
-  transactionType: string | null;
-  disclosedAtText: string | null;
-  disclosedAt: string | null;
-  xbrlLink: string | null;
+  _id: string;
+  _creationTime: number;
+  symbol: string;
+  companyName: string;
+  acquirerOrDisposer: string;
+  regulation: string;
+  securityType: string;
+  quantity: number;
+  transactionType: string;
+  disclosedAt: string;
+  xbrlLink?: string;
+};
+
+export type NseTransformedTrade = {
+  _id: string;
+  _creationTime: number;
+  scripCode: string;
+  companyName: string;
+  personName: string;
+  category: string;
+  securitiesHeldPreTransaction: null;
+  securitiesHeldPrePercentage: null;
+  securityType: string;
+  numberOfSecurities: number;
+  valuePerSecurity: null;
+  transactionType: string;
+  securitiesHeldPostTransaction: null;
+  securitiesHeldPostPercentage: null;
+  dateOfAllotmentOrTransaction: string;
+  dateOfAllotmentOrTransactionText: string;
+  modeOfAcquisition: null;
+  derivativeType: null;
+  buyValueUnits: null;
+  sellValueUnits: null;
+  dateOfIntimation: string;
+  dateOfIntimationText: string;
+  createdAt: number;
+  xbrlLink?: string;
 };

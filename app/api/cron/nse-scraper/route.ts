@@ -18,7 +18,7 @@ type Trade = {
   securityType: string;
   quantity: number;
   transactionType: string;
-  disclosedAt: string;  
+  disclosedAt: string;
   xbrlLink?: string;
 };
 
@@ -44,6 +44,8 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await scrapeRes.json();
+
+    console.log(data);
     const rows: Array<{
       symbol: string | null;
       companyName: string | null;
@@ -52,7 +54,7 @@ export async function GET(req: NextRequest) {
       securityType: string | null;
       quantity: number | null;
       transactionType: string | null;
-      disclosedAt: string | null;   
+      disclosedAt: string | null;
       xbrlLink: string | null;
     }> = data.rows || [];
 
@@ -77,7 +79,9 @@ export async function GET(req: NextRequest) {
         acquirerOrDisposer: (r.acquirerOrDisposer ?? "").trim(),
         regulation: (r.regulation ?? "").trim(),
         securityType: (r.securityType ?? "").trim(),
-        quantity: Number.isFinite(r.quantity as number) ? (r.quantity as number) : 0,
+        quantity: Number.isFinite(r.quantity as number)
+          ? (r.quantity as number)
+          : 0,
         transactionType: (r.transactionType ?? "").trim(),
         disclosedAt: (r.disclosedAt ?? "").trim(),
         xbrlLink: r.xbrlLink ?? undefined,
@@ -87,7 +91,7 @@ export async function GET(req: NextRequest) {
           t.symbol &&
           t.companyName &&
           t.acquirerOrDisposer &&
-          t.disclosedAt && // ISO string from scraper
+          t.disclosedAt &&
           Number.isFinite(t.quantity)
       );
 
@@ -102,12 +106,35 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Single batched insert with server-side de-dupe
     await convex.mutation(api.nseInsiderTrading.insertTrades, { trades });
 
-    console.log(`[CRON] Sent ${trades.length} trades to Convex (server de-dupes).`);
+    for (const row of rows) {
+      const exists = await convex.query(api.unifiedInsiderTrading.checkExists, {
+        exchange: "NSE",
+        scripCode: row.symbol!,
+        transactionDate: row.disclosedAt!,
+        numberOfSecurities: row.quantity!,
+      });
 
-    // Your current insertTrades doesn't return counts; we can still report what we sent.
+      if (!exists) {
+        await convex.mutation(api.unifiedInsiderTrading.insertFromNse, {
+          symbol: row.symbol!,
+          companyName: row.companyName!,
+          acquirerOrDisposer: row.acquirerOrDisposer!,
+          regulation: row.regulation!,
+          securityType: row.securityType!,
+          quantity: row.quantity!,
+          transactionType: row.transactionType!,
+          transactionDate: row.disclosedAt!,
+          xbrlLink: row.xbrlLink,
+        });
+      }
+    }
+
+    console.log(
+      `[CRON] Sent ${trades.length} trades to Convex (server de-dupes).`
+    );
+
     return NextResponse.json({
       success: true,
       totalScraped: rows.length,

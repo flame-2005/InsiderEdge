@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ConvexClientProvider } from "./convesProvider";
 import { BseTradesProvider } from "@/context/BseTradesContext";
+import { NseTradesProvider } from "@/context/NseTradeContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,12 +29,14 @@ export default function RootLayout({
     <html lang="en">
       <ConvexClientProvider>
         <BseTradesProvider>
+          <NseTradesProvider>
 
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
-            {children}
-          </body>
+            <body
+              className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+            >
+              {children}
+            </body>
+          </NseTradesProvider>
         </BseTradesProvider>
       </ConvexClientProvider>
     </html>

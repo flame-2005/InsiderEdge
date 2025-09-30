@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 
   try {
     console.log("[CRON] Starting BSE scraper...");
-    
+
     // Call your BSE scraper API
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const scrapeRes = await fetch(`${baseUrl}/api/scrape/bse`, {
@@ -30,14 +30,14 @@ export async function GET(req: NextRequest) {
 
     const data = await scrapeRes.json();
     const rows = data.rows || [];
-    
+
     console.log(`[CRON] Scraped ${rows.length} rows from BSE`);
 
     if (rows.length === 0) {
-      return NextResponse.json({ 
-        success: true, 
+      return NextResponse.json({
+        success: true,
         message: "No rows to process",
-        inserted: 0 
+        inserted: 0,
       });
     }
 
@@ -55,6 +55,39 @@ export async function GET(req: NextRequest) {
           numberOfSecurities: row.numberOfSecurities,
         });
 
+        const existsUnion = await convex.query(
+          api.unifiedInsiderTrading.checkExists,
+          {
+            exchange: "BSE",
+            scripCode: row.scripCode,
+            transactionDate: row.dateOfIntimation,
+            numberOfSecurities: row.numberOfSecurities,
+          }
+        );
+
+        if (!existsUnion) {
+          await convex.mutation(api.unifiedInsiderTrading.insertFromBse, {
+            scripCode: row.scripCode,
+            companyName: row.companyName,
+            personName: row.personName,
+            category: row.category,
+            securityType: row.securityType,
+            numberOfSecurities: row.numberOfSecurities,
+            transactionType: row.transactionType,
+            transactionDate: row.dateOfIntimation,
+            transactionDateText: row.dateOfIntimationText,
+            securitiesHeldPreTransaction: row.securitiesHeldPreTransaction,
+            securitiesHeldPrePercentage: row.securitiesHeldPrePercentage,
+            valuePerSecurity: row.valuePerSecurity,
+            securitiesHeldPostTransaction: row.securitiesHeldPostTransaction,
+            securitiesHeldPostPercentage: row.securitiesHeldPostPercentage,
+            modeOfAcquisition: row.modeOfAcquisition,
+            derivativeType: row.derivativeType,
+            buyValueUnits: row.buyValueUnits,
+            sellValueUnits: row.sellValueUnits,
+          });
+        }
+
         if (!exists) {
           // Insert new record
           await convex.mutation(api.bseInsiderTrading.insert, {
@@ -71,7 +104,8 @@ export async function GET(req: NextRequest) {
             securitiesHeldPostTransaction: row.securitiesHeldPostTransaction,
             securitiesHeldPostPercentage: row.securitiesHeldPostPercentage,
             dateOfAllotmentOrTransaction: row.dateOfAllotmentOrTransaction,
-            dateOfAllotmentOrTransactionText: row.dateOfAllotmentOrTransactionText,
+            dateOfAllotmentOrTransactionText:
+              row.dateOfAllotmentOrTransactionText,
             modeOfAcquisition: row.modeOfAcquisition,
             derivativeType: row.derivativeType,
             buyValueUnits: row.buyValueUnits,
@@ -88,7 +122,9 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    console.log(`[CRON] Completed: ${insertedCount} inserted, ${skippedCount} skipped`);
+    console.log(
+      `[CRON] Completed: ${insertedCount} inserted, ${skippedCount} skipped`
+    );
 
     return NextResponse.json({
       success: true,
@@ -100,9 +136,9 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error("[CRON] Error:", error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : String(error) 
+      {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
       },
       { status: 500 }
     );

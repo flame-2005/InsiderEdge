@@ -60,8 +60,8 @@ function parseRowsFromHtml(html: string): Row[] {
     const symbol =
       $(tds[0]).find("a").text().trim() || $(tds[0]).text().trim() || null;
     const companyName = $(tds[1]).text().trim() || null;
-    const acquirerOrDisposer = $(tds[2]).text().trim() || null;
-    const regulation = $(tds[3]).text().trim() || null;
+    const regulation = $(tds[2]).text().trim() || null;
+    const acquirerOrDisposer = $(tds[3]).text().trim() || null;
     const securityType = $(tds[4]).text().trim() || null;
     const quantity = parseIntSafe($(tds[5]).text().trim());
     const transactionType = $(tds[6]).text().trim() || null;
