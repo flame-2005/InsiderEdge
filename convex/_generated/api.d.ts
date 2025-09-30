@@ -15,11 +15,8 @@ import type {
 } from "convex/server";
 import type * as bseInsiderTrading from "../bseInsiderTrading.js";
 import type * as nseInsiderTrading from "../nseInsiderTrading.js";
-import type * as schema_bseInsider from "../schema/bseInsider.js";
-import type * as schema_nseInsider from "../schema/nseInsider.js";
-import type * as schema_unifiedInsider from "../schema/unifiedInsider.js";
-import type * as schema_user from "../schema/user.js";
 import type * as unifiedInsiderTrading from "../unifiedInsiderTrading.js";
+import type * as user from "../user.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -32,11 +29,8 @@ import type * as unifiedInsiderTrading from "../unifiedInsiderTrading.js";
 declare const fullApi: ApiFromModules<{
   bseInsiderTrading: typeof bseInsiderTrading;
   nseInsiderTrading: typeof nseInsiderTrading;
-  "schema/bseInsider": typeof schema_bseInsider;
-  "schema/nseInsider": typeof schema_nseInsider;
-  "schema/unifiedInsider": typeof schema_unifiedInsider;
-  "schema/user": typeof schema_user;
   unifiedInsiderTrading: typeof unifiedInsiderTrading;
+  user: typeof user;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
