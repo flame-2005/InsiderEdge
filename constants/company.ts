@@ -1,0 +1,61 @@
+export type CompanyRow = {
+  scripCode: string | null;
+  companyName: string | null;
+  personName: string | null;
+  category: string | null;
+  securitiesHeldPreTransaction: number | null;
+  securitiesHeldPrePercentage: number | null;
+  securityType: string | null;
+  numberOfSecurities: number | null;
+  valuePerSecurity: number | null;
+  transactionType: string | null;
+  securitiesHeldPostTransaction: number | null;
+  securitiesHeldPostPercentage: number | null;
+  dateOfAllotmentOrTransaction: string | null;
+  dateOfAllotmentOrTransactionText: string | null;
+  modeOfAcquisition: string | null;
+  derivativeType: string | null;
+  buyValueUnits: string | null;
+  sellValueUnits: string | null;
+  dateOfIntimation: string | null;
+  dateOfIntimationText: string | null;
+};
+
+export type BseInsiderTrade = {
+  _id: string;
+  _creationTime: number;
+  scripCode: string | null;
+  companyName: string | null;
+  personName: string | null;
+  category: string | null;
+  securitiesHeldPreTransaction: number | null;
+  securitiesHeldPrePercentage: number | null;
+  securityType: string | null;
+  numberOfSecurities: number | null;
+  valuePerSecurity: number | null;
+  transactionType: string | null;
+  securitiesHeldPostTransaction: number | null;
+  securitiesHeldPostPercentage: number | null;
+  dateOfAllotmentOrTransaction: string | null;
+  dateOfAllotmentOrTransactionText: string | null;
+  modeOfAcquisition: string | null;
+  derivativeType: string | null;
+  buyValueUnits: string | null;
+  sellValueUnits: string | null;
+  dateOfIntimation: string | null;
+  dateOfIntimationText: string | null;
+  createdAt: number;
+};
+
+export type NseInsiderTrade = {
+  symbol: string | null;
+  companyName: string | null;
+  acquirerOrDisposer: string | null;
+  regulation: string | null;
+  securityType: string | null;
+  quantity: number | null;
+  transactionType: string | null;
+  disclosedAtText: string | null;
+  disclosedAt: string | null;
+  xbrlLink: string | null;
+};
