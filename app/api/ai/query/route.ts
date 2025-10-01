@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Get index and check stats
-    const index = pinecone.index("insider-edge");
+    const index = pinecone.index(process.env.NEXT_PUBLIC_PINECONE_INDEX!);
     
     // Optional: Check index stats for debugging
     try {
