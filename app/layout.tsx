@@ -5,6 +5,7 @@ import { ConvexClientProvider } from "./convesProvider";
 import { BseTradesProvider } from "@/context/BseTradesContext";
 import { NseTradesProvider } from "@/context/NseTradeContext";
 import { UserProvider } from "@/context/UserContext";
+import Chatbot from "@/components/chatBot/ChatBot";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,7 @@ export default function RootLayout({
               <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
               >
+                <Chatbot/>
                 {children}
               </body>
             </UserProvider>

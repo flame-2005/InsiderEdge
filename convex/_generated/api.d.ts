@@ -14,6 +14,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as bseBulkDeals from "../bseBulkDeals.js";
+import type * as bseCorporateActions from "../bseCorporateActions.js";
 import type * as bseInsiderTrading from "../bseInsiderTrading.js";
 import type * as notification from "../notification.js";
 import type * as nseInsiderTrading from "../nseInsiderTrading.js";
@@ -30,6 +31,7 @@ import type * as user from "../user.js";
  */
 declare const fullApi: ApiFromModules<{
   bseBulkDeals: typeof bseBulkDeals;
+  bseCorporateActions: typeof bseCorporateActions;
   bseInsiderTrading: typeof bseInsiderTrading;
   notification: typeof notification;
   nseInsiderTrading: typeof nseInsiderTrading;

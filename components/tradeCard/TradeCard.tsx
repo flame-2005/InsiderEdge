@@ -61,18 +61,23 @@ const StatsTooltip = ({
         : 0;
     
     const totalValue = trade.valuePerSecurity || 0;
+    const isBuy = trade.transactionType?.toLowerCase().includes("acquisition") ||
+        trade.transactionType?.toLowerCase().includes("buy");
+    
     const preHolding = trade.securitiesHeldPreTransaction || 
         (trade.securitiesHeldPostTransaction && trade.numberOfSecurities 
-            ? trade.securitiesHeldPostTransaction - trade.numberOfSecurities 
+            ? isBuy 
+                ? trade.securitiesHeldPostTransaction - trade.numberOfSecurities 
+                : trade.securitiesHeldPostTransaction + trade.numberOfSecurities
             : 0);
     const postHolding = trade.securitiesHeldPostTransaction || 0;
     const changePercent = preHolding > 0 
-        ? ((trade.numberOfSecurities || 0) / preHolding) * 100 
+        ? (((postHolding - preHolding) / preHolding) * 100)
         : 0;
 
     return (
         <div 
-            className="absolute top-4 right-4 z-50 bg-gray-900 text-white rounded-xl shadow-2xl p-4 w-72"
+            className="absolute top-4 right-4 z-20 bg-gray-900 text-white rounded-xl shadow-2xl p-4 w-72"
         >
             <div className="space-y-3">
                 <div className="border-b border-gray-700 pb-2">
@@ -119,7 +124,7 @@ const StatsTooltip = ({
                 {changePercent !== 0 && (
                     <div className="bg-blue-900/30 rounded-lg p-2 border border-blue-700/50">
                         <p className="text-gray-300 text-xs">
-                            Change: <span className="font-bold text-blue-400">{changePercent > 0 ? '+' : ''}{changePercent.toFixed(2)}%</span> from previous holdings
+                            Holdings change: <span className={`font-bold ${changePercent > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>{changePercent > 0 ? '+' : ''}{changePercent.toFixed(2)}%</span>
                         </p>
                     </div>
                 )}

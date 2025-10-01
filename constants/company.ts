@@ -99,3 +99,17 @@ export type BulkDealRow = {
   price: number;             
   totalValue: number;        
 };
+
+export type CorporateActionRow  = {
+  scripCode: string | null;
+  companyName: string | null;
+  field2: string | null;
+  purpose: string | null;
+  exDate: string | null;  
+  exDateText: string | null;   
+  recordDate: string | null;
+  bcStartDate: string | null;
+  bcEndDate: string | null;
+  ndStartDate: string | null;
+  ndEndDate: string | null;
+}

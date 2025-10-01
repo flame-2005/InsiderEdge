@@ -102,4 +102,22 @@ export default defineSchema({
     .index("by_date", ["date"])
     .index("by_clientName", ["clientName"])
     .index("by_createdAt", ["createdAt"]),
+
+  bseCorporateActions: defineTable({
+    scripCode: v.string(),
+    companyName: v.union(v.string(), v.null()),
+    exDate: v.union(v.string(), v.null()), // ISO date string
+    exDateText: v.union(v.string(), v.null()), // Original text format
+    purpose: v.union(v.string(), v.null()), // e.g., "Interim Dividend", "Bonus", "Split"
+    recordDate: v.union(v.string(), v.null()),
+    bcStartDate: v.union(v.string(), v.null()), // Book closure start date
+    bcEndDate: v.union(v.string(), v.null()), // Book closure end date
+    ndStartDate: v.union(v.string(), v.null()), // ND start date
+    ndEndDate: v.union(v.string(), v.null()), // ND end date
+    createdAt: v.float64(),
+  })
+    .index("by_scripCode", ["scripCode"])
+    .index("by_purpose", ["purpose"])
+    .index("by_exDate", ["exDate"])
+    .index("by_createdAt", ["createdAt"]),
 });

@@ -147,13 +147,13 @@ export const getByScripCode = query({
 
 // Get all (paginated)
 export const getAll = query({
-  args: { limit: v.optional(v.number()) },
-  handler: async (ctx, args) => {
-    const limit = args.limit || 100;
-    return await ctx.db
+  args: {},
+  handler: async (ctx) => {
+    const records = await ctx.db
       .query("unifiedInsider")
       .order("desc")
-      .take(limit);
+      .collect();
+    return records;
   },
 });
 

@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/bse-bulk-deals",
       "schedule": "0 */5 * * * *"
+    },
+    {
+      "path": "/api/cron/bse-corporate-actions",
+      "schedule": "0 */5 * * * *"
     }
   ]
 }

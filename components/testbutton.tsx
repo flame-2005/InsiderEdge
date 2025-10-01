@@ -3,7 +3,7 @@
 export default function TestCronButton() {
 
   const triggerCron = async () => {
-    const res = await fetch("/api/cron/bse-bulk-deals", {
+    const res = await fetch("/api/cron/bse-corporate-actions", {
       headers: {
         "Authorization": `Bearer ${process.env.NEXT_PUBLIC_CRON_SECRET}`
       }
