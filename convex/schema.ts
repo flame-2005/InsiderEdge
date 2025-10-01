@@ -38,7 +38,7 @@ export default defineSchema({
     regulation: v.string(),
     securityType: v.string(),
     quantity: v.number(),
-    createdAt:v.number(),
+    createdAt: v.number(),
     transactionType: v.string(),
     disclosedAt: v.string(), // ISO date
     xbrlLink: v.optional(v.string()),
@@ -82,5 +82,24 @@ export default defineSchema({
     name: v.string(),
     email: v.string(),
     createdAt: v.number(),
-  }).index("by_supabaseId", ["supabaseId"]),
+  })
+    .index("by_supabaseId", ["supabaseId"])
+    .index("by_email", ["email"]),
+
+  bseBulkDeals: defineTable({
+    scripCode: v.string(),
+    companyName: v.string(),
+    clientName: v.string(),
+    dealType: v.string(),
+    quantity: v.float64(),
+    price: v.float64(),
+    totalValue: v.float64(),
+    date: v.union(v.string(), v.null()),
+    dateText: v.string(),
+    createdAt: v.float64(),
+  })
+    .index("by_scripCode", ["scripCode"])
+    .index("by_date", ["date"])
+    .index("by_clientName", ["clientName"])
+    .index("by_createdAt", ["createdAt"]),
 });

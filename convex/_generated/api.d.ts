@@ -13,7 +13,9 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as bseBulkDeals from "../bseBulkDeals.js";
 import type * as bseInsiderTrading from "../bseInsiderTrading.js";
+import type * as notification from "../notification.js";
 import type * as nseInsiderTrading from "../nseInsiderTrading.js";
 import type * as unifiedInsiderTrading from "../unifiedInsiderTrading.js";
 import type * as user from "../user.js";
@@ -27,7 +29,9 @@ import type * as user from "../user.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  bseBulkDeals: typeof bseBulkDeals;
   bseInsiderTrading: typeof bseInsiderTrading;
+  notification: typeof notification;
   nseInsiderTrading: typeof nseInsiderTrading;
   unifiedInsiderTrading: typeof unifiedInsiderTrading;
   user: typeof user;

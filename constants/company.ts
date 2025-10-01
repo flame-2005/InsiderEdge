@@ -87,3 +87,15 @@ export type NseTransformedTrade = {
   createdAt: number;
   xbrlLink?: string;
 };
+
+export type BulkDealRow = {
+  date: string | null;       
+  dateText: string;          
+  scripCode: string;        
+  companyName: string;       
+  clientName: string;       
+  dealType: "B" | "S" | ""; 
+  quantity: number;          
+  price: number;             
+  totalValue: number;        
+};

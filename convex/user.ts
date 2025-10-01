@@ -38,3 +38,13 @@ export const getUserBySupabaseId = query({
       .first();
   },
 });
+
+export const getAllEmails = query({
+  args: {},
+  handler: async (ctx) => {
+    const users = await ctx.db.query("users").collect();
+    // Filter out empties; keep emails unique
+    const set = new Set(users.map((u) => (u.email ?? "").trim().toLowerCase()).filter(Boolean));
+    return Array.from(set);
+  },
+});

@@ -1,8 +1,9 @@
 "use client"
 
 export default function TestCronButton() {
+
   const triggerCron = async () => {
-    const res = await fetch("/api/cron/nse-scraper", {
+    const res = await fetch("/api/cron/bse-bulk-deals", {
       headers: {
         "Authorization": `Bearer ${process.env.NEXT_PUBLIC_CRON_SECRET}`
       }

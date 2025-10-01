@@ -34,7 +34,6 @@ export async function GET(req: NextRequest) {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const url = new URL(`${baseUrl}/api/scrape/nse`);
 
-    // forward any query params (e.g. ?symbol=INFY)
     const incoming = new URL(req.url);
     incoming.searchParams.forEach((v, k) => url.searchParams.set(k, v));
 
@@ -45,7 +44,6 @@ export async function GET(req: NextRequest) {
 
     const data = await scrapeRes.json();
 
-    console.log(data);
     const rows: Array<{
       symbol: string | null;
       companyName: string | null;
@@ -117,17 +115,21 @@ export async function GET(req: NextRequest) {
       });
 
       if (!exists) {
-        await convex.mutation(api.unifiedInsiderTrading.insertFromNse, {
-          symbol: row.symbol!,
-          companyName: row.companyName!,
-          acquirerOrDisposer: row.acquirerOrDisposer!,
-          regulation: row.regulation!,
-          securityType: row.securityType!,
-          quantity: row.quantity!,
-          transactionType: row.transactionType!,
-          transactionDate: row.disclosedAt!,
-          xbrlLink: row.xbrlLink,
-        });
+        const id = await convex.mutation(
+          api.unifiedInsiderTrading.insertFromNse,
+          {
+            symbol: row.symbol!,
+            companyName: row.companyName!,
+            acquirerOrDisposer: row.acquirerOrDisposer!,
+            regulation: row.regulation!,
+            securityType: row.securityType!,
+            quantity: row.quantity!,
+            transactionType: row.transactionType!,
+            transactionDate: row.disclosedAt!,
+            xbrlLink: row.xbrlLink,
+          }
+        );
+        await convex.action(api.notification.notifyInsiderInsert, { id });
       }
     }
 

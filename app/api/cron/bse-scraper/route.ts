@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
         );
 
         if (!existsUnion) {
-          await convex.mutation(api.unifiedInsiderTrading.insertFromBse, {
+          const id = await convex.mutation(api.unifiedInsiderTrading.insertFromBse, {
             scripCode: row.scripCode,
             companyName: row.companyName,
             personName: row.personName,
@@ -86,6 +86,8 @@ export async function GET(req: NextRequest) {
             buyValueUnits: row.buyValueUnits,
             sellValueUnits: row.sellValueUnits,
           });
+
+          await convex.action(api.notification.notifyInsiderInsert, { id });
         }
 
         if (!exists) {
