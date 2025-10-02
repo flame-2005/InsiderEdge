@@ -151,8 +151,8 @@ export default function BseActivityCards() {
                         <button
                             onClick={() => setShowFilters(!showFilters)}
                             className={`px-4 py-2 rounded-xl font-medium transition-all flex items-center gap-2 ${showFilters
-                                    ? "bg-blue-600 text-white shadow-lg"
-                                    : "bg-white text-gray-700 border-2 border-gray-200 hover:border-blue-300"
+                                ? "bg-blue-600 text-white shadow-lg"
+                                : "bg-white text-gray-700 border-2 border-gray-200 hover:border-blue-300"
                                 }`}
                         >
                             <Filter className="w-4 h-4" />
@@ -163,53 +163,6 @@ export default function BseActivityCards() {
                                 </span>
                             )}
                         </button>
-                    </div>
-                </div>
-
-                {/* Statistics Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="bg-white rounded-2xl p-6 border-2 border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                        <div className="flex items-center justify-between mb-2">
-                            <BarChart3 className="w-8 h-8 text-blue-600" />
-                            <span className="text-sm font-medium text-gray-500">Total</span>
-                        </div>
-                        <p className="text-3xl font-bold text-gray-900">{statistics.totalTrades}</p>
-                        <p className="text-sm text-gray-600 mt-1">Transactions</p>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl p-6 border-2 border-emerald-200 shadow-sm hover:shadow-md transition-shadow">
-                        <div className="flex items-center justify-between mb-2">
-                            <TrendingUp className="w-8 h-8 text-emerald-600" />
-                            <span className="text-sm font-medium text-emerald-700">Buys</span>
-                        </div>
-                        <p className="text-3xl font-bold text-emerald-900">{statistics.buyCount}</p>
-                        <p className="text-sm text-emerald-700 mt-1">
-                            {statistics.totalTrades > 0 ? ((statistics.buyCount / statistics.totalTrades) * 100).toFixed(1) : 0}% of total
-                        </p>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-rose-50 to-red-100 rounded-2xl p-6 border-2 border-rose-200 shadow-sm hover:shadow-md transition-shadow">
-                        <div className="flex items-center justify-between mb-2">
-                            <TrendingDown className="w-8 h-8 text-rose-600" />
-                            <span className="text-sm font-medium text-rose-700">Sells</span>
-                        </div>
-                        <p className="text-3xl font-bold text-rose-900">{statistics.sellCount}</p>
-                        <p className="text-sm text-rose-700 mt-1">
-                            {statistics.totalTrades > 0 ? ((statistics.sellCount / statistics.totalTrades) * 100).toFixed(1) : 0}% of total
-                        </p>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-purple-50 to-indigo-100 rounded-2xl p-6 border-2 border-purple-200 shadow-sm hover:shadow-md transition-shadow">
-                        <div className="flex items-center justify-between mb-2">
-                            <Building2 className="w-8 h-8 text-purple-600" />
-                            <span className="text-sm font-medium text-purple-700">Volume</span>
-                        </div>
-                        <p className="text-3xl font-bold text-purple-900">
-                            {statistics.totalVolume > 1000000
-                                ? `${(statistics.totalVolume / 1000000).toFixed(1)}M`
-                                : `${(statistics.totalVolume / 1000).toFixed(0)}K`}
-                        </p>
-                        <p className="text-sm text-purple-700 mt-1">{formatCurrency(statistics.totalValue)}</p>
                     </div>
                 </div>
 
@@ -357,6 +310,55 @@ export default function BseActivityCards() {
                         )}
                     </div>
                 )}
+
+                {/* Statistics Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="bg-white rounded-2xl p-6 border-2 border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between mb-2">
+                            <BarChart3 className="w-8 h-8 text-blue-600" />
+                            <span className="text-sm font-medium text-gray-500">Total</span>
+                        </div>
+                        <p className="text-3xl font-bold text-gray-900">{statistics.totalTrades}</p>
+                        <p className="text-sm text-gray-600 mt-1">Transactions</p>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl p-6 border-2 border-emerald-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between mb-2">
+                            <TrendingUp className="w-8 h-8 text-emerald-600" />
+                            <span className="text-sm font-medium text-emerald-700">Buys</span>
+                        </div>
+                        <p className="text-3xl font-bold text-emerald-900">{statistics.buyCount}</p>
+                        <p className="text-sm text-emerald-700 mt-1">
+                            {statistics.totalTrades > 0 ? ((statistics.buyCount / statistics.totalTrades) * 100).toFixed(1) : 0}% of total
+                        </p>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-rose-50 to-red-100 rounded-2xl p-6 border-2 border-rose-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between mb-2">
+                            <TrendingDown className="w-8 h-8 text-rose-600" />
+                            <span className="text-sm font-medium text-rose-700">Sells</span>
+                        </div>
+                        <p className="text-3xl font-bold text-rose-900">{statistics.sellCount}</p>
+                        <p className="text-sm text-rose-700 mt-1">
+                            {statistics.totalTrades > 0 ? ((statistics.sellCount / statistics.totalTrades) * 100).toFixed(1) : 0}% of total
+                        </p>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-purple-50 to-indigo-100 rounded-2xl p-6 border-2 border-purple-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between mb-2">
+                            <Building2 className="w-8 h-8 text-purple-600" />
+                            <span className="text-sm font-medium text-purple-700">Volume</span>
+                        </div>
+                        <p className="text-3xl font-bold text-purple-900">
+                            {statistics.totalVolume > 1000000
+                                ? `${(statistics.totalVolume / 1000000).toFixed(1)}M`
+                                : `${(statistics.totalVolume / 1000).toFixed(0)}K`}
+                        </p>
+                        <p className="text-sm text-purple-700 mt-1">{formatCurrency(statistics.totalValue)}</p>
+                    </div>
+                </div>
+
+
 
                 {/* Results Header */}
                 <div className="flex items-center justify-between bg-white rounded-xl p-4 border-2 border-gray-200">

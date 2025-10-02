@@ -32,11 +32,11 @@ export default function Home() {
           <div className="flex items-center justify-between">
             {/* Logo/Title */}
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform">
-                <TrendingUp className="w-7 h-7 text-white" />
+              <div className="w-12 h-12 bg-gradient-to-br hidden md:block from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform">
+                <TrendingUp className="w-7 h-7 text-white " />
               </div>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                <h1 className="md:text-2xl text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                   Market Activity
                 </h1>
                 <p className="text-xs text-gray-500 font-medium">Real-time exchange updates</p>
@@ -54,16 +54,14 @@ export default function Home() {
                   onClick={signOut}
                   className="px-5 py-2.5 rounded-xl font-semibold bg-gradient-to-r from-red-500 to-rose-600 text-white hover:from-red-600 hover:to-rose-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center gap-2"
                 >
-                  <LogOut className="w-4 h-4" />
                   <span>Sign Out</span>
                 </button>
               </div>
             ) : (
               <button
                 onClick={() => router.push("/login")}
-                className="px-5 py-2.5 rounded-xl font-semibold bg-gradient-to-r from-indigo-600 to-blue-600 text-white hover:from-indigo-700 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center gap-2"
+                className=" md:px-5 px-2 py-2.5 rounded-xl md:font-semibold bg-gradient-to-r from-indigo-600 to-blue-600 text-white hover:from-indigo-700 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center gap-2 text-sm md:text-md"
               >
-                <LogIn className="w-4 h-4" />
                 <span>Sign in for updates</span>
               </button>
             )}
@@ -83,35 +81,35 @@ export default function Home() {
           <div className="inline-flex rounded-2xl bg-white p-1.5 shadow-lg border-2 border-gray-200/50">
             <button
               onClick={() => setCurrentTab(Tabs.Current)}
-              className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 ${
+              className={`md:px-6 md:py-3 px-2 py-1 rounded-xl md:font-semibold transition-all duration-300 flex items-center gap-2 ${
                 currentTab === Tabs.Current 
                   ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md" 
                   : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
               }`}
-            >
-              <Activity className="w-4 h-4" />
+            > 
+              <Activity className="w-4 h-4 hidden md:block" />
               <span>Insider Trading</span>
             </button>
             <button
               onClick={() => setCurrentTab(Tabs.BulkDeal)}
-              className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 ${
+              className={`md:px-6 md:py-3 px-2 py-1 rounded-xl  md:font-semibold transition-all duration-300 flex items-center gap-2 ${
                 currentTab === Tabs.BulkDeal 
                   ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md" 
                   : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
               }`}
             >
-              <Building2 className="w-4 h-4" />
+              <Building2 className="w-4 h-4 hidden md:block" />
               <span>Bulk Deals</span>
             </button>
             <button
               onClick={() => setCurrentTab(Tabs.Actions)}
-              className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 ${
+              className={`md:px-6 md:py-3 px-2 py-1 rounded-xl md:font-semibold transition-all duration-300 flex items-center gap-2 ${
                 currentTab === Tabs.Actions 
                   ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md" 
                   : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
               }`}
             >
-              <FileText className="w-4 h-4" />
+              <FileText className="w-4 h-4 hidden md:block " />
               <span>Corporate Actions</span>
             </button>
           </div>

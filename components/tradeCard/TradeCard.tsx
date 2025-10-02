@@ -77,7 +77,7 @@ const StatsTooltip = ({
 
     return (
         <div 
-            className="absolute top-4 right-4 z-20 bg-gray-900 text-white rounded-xl shadow-2xl p-4 w-72"
+            className="absolute md:top-4 md:right-4 z-20 bg-gray-900 text-white rounded-xl shadow-2xl p-4 w-72"
         >
             <div className="space-y-3">
                 <div className="border-b border-gray-700 pb-2">

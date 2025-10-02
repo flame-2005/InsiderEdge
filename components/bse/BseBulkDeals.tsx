@@ -76,7 +76,7 @@ export default function BseBulkDealsCard() {
       <div className="flex items-center justify-center p-12">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading bulk BseBulkDeals...</p>
+          <p className="text-gray-600 font-medium">Loading bulk Deals...</p>
         </div>
       </div>
     );
@@ -99,7 +99,7 @@ export default function BseBulkDealsCard() {
         <div>
           <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
             <TrendingUp className="w-8 h-8 text-blue-600" />
-            BSE Bulk BseBulkDeals
+            BSE Bulk Deals
           </h2>
           <p className="text-gray-600 mt-1">Real-time bulk transaction insights</p>
         </div>
@@ -108,12 +108,12 @@ export default function BseBulkDealsCard() {
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <p className="text-gray-600 text-sm font-medium">Total BseBulkDeals</p>
+            <p className="text-gray-600 text-sm font-medium">Total Deals</p>
             <p className="text-2xl font-bold text-gray-900 mt-1">{stats.totalDeals}</p>
           </div>
           <div className="bg-green-50 rounded-xl p-4 shadow-sm border border-green-100">
             <p className="text-green-700 text-sm font-medium flex items-center gap-1">
-              <TrendingUp className="w-4 h-4" /> Buy BseBulkDeals
+              <TrendingUp className="w-4 h-4" /> Buy Deals
             </p>
             <p className="text-2xl font-bold text-green-700 mt-1">{stats.buyDeals}</p>
             <p className="text-xs text-green-600 mt-1">
@@ -122,7 +122,7 @@ export default function BseBulkDealsCard() {
           </div>
           <div className="bg-red-50 rounded-xl p-4 shadow-sm border border-red-100">
             <p className="text-red-700 text-sm font-medium flex items-center gap-1">
-              <TrendingDown className="w-4 h-4" /> Sell BseBulkDeals
+              <TrendingDown className="w-4 h-4" /> Sell Deals
             </p>
             <p className="text-2xl font-bold text-red-700 mt-1">{stats.sellDeals}</p>
             <p className="text-xs text-red-600 mt-1">
@@ -171,7 +171,7 @@ export default function BseBulkDealsCard() {
                 onChange={(e) => setFilterType(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
               >
-                <option value="all">All BseBulkDeals</option>
+                <option value="all">All Deals</option>
                 <option value="B">Buy Only</option>
                 <option value="S">Sell Only</option>
               </select>
@@ -215,13 +215,13 @@ export default function BseBulkDealsCard() {
       <div className="flex justify-between items-center">
         <p className="text-sm text-gray-600">
           Showing <span className="font-semibold">{filteredDeals.length}</span> of{" "}
-          <span className="font-semibold">{BseBulkDeals.length}</span> BseBulkDeals
+          <span className="font-semibold">{BseBulkDeals.length}</span> Deals
         </p>
       </div>
 
       {filteredDeals.length === 0 ? (
         <div className="text-center p-12 bg-white rounded-xl">
-          <p className="text-gray-500">No BseBulkDeals match your filters</p>
+          <p className="text-gray-500">No Deals match your filters</p>
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
