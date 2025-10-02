@@ -263,22 +263,6 @@ export default function Chatbot() {
                     </div>
                 </div>
             )}
-
-            <style jsx>{`
-        @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-slideUp {
-          animation: slideUp 0.3s ease-out;
-        }
-      `}</style>
         </>
     );
 }
