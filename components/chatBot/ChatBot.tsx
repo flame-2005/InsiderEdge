@@ -177,9 +177,14 @@ export default function Chatbot() {
                                         : "bg-white text-gray-800 shadow-md border border-gray-100"
                                         }`}
                                 >
-                                    <p className="text-sm whitespace-pre-wrap leading-relaxed">
-                                        {msg.content}
-                                    </p>
+                                    <div
+                                        className="text-sm whitespace-pre-wrap leading-relaxed"
+                                        dangerouslySetInnerHTML={{
+                                            __html: msg.content
+                                                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                                                .replace(/\* (.+?)(?=\n|$)/g, '• $1')
+                                        }}
+                                    />
                                 </div>
                             </div>
                         ))}

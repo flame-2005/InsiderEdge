@@ -19,7 +19,11 @@ type Trade = {
   quantity: number;
   transactionType: string;
   disclosedAt: string;
-  xbrlLink?: string;
+  xbrlLink: string;
+};
+
+type TradeWithTransaction = Trade & {
+  transactionData?: string;
 };
 
 export async function GET(req: NextRequest) {
@@ -44,17 +48,7 @@ export async function GET(req: NextRequest) {
 
     const data = await scrapeRes.json();
 
-    const rows: Array<{
-      symbol: string | null;
-      companyName: string | null;
-      acquirerOrDisposer: string | null;
-      regulation: string | null;
-      securityType: string | null;
-      quantity: number | null;
-      transactionType: string | null;
-      disclosedAt: string | null;
-      xbrlLink: string | null;
-    }> = data.rows || [];
+    const rows: Trade[] = data.rows || [];
 
     console.log(`[CRON] Scraped ${rows.length} rows from NSE`);
 
@@ -104,33 +98,75 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    await convex.mutation(api.nseInsiderTrading.insertTrades, { trades });
+    const BATCH_SIZE = 25;
+    let totalInserted = 0;
+    const newRecord: TradeWithTransaction[] = [];
+
+    for (let i = 0; i < trades.length; i += BATCH_SIZE) {
+      const batch = trades.slice(i, i + BATCH_SIZE);
+      console.log(
+        `[CRON] Processing batch ${Math.floor(i / BATCH_SIZE) + 1} of ${Math.ceil(trades.length / BATCH_SIZE)}`
+      );
+
+      try {
+        await convex.mutation(api.nseInsiderTrading.insertTrades, {
+          trades: batch,
+        });
+        totalInserted += batch.length;
+      } catch (batchError) {
+        console.error(
+          `[CRON] Batch ${Math.floor(i / BATCH_SIZE) + 1} failed:`,
+          batchError
+        );
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+    }
 
     for (const row of rows) {
       const exists = await convex.query(api.unifiedInsiderTrading.checkExists, {
         exchange: "NSE",
-        scripCode: row.symbol!,
-        transactionDate: row.disclosedAt!,
-        numberOfSecurities: row.quantity!,
+        scripCode: row.symbol,
+        transactionDate: row.disclosedAt,
+        numberOfSecurities: row.quantity,
       });
 
       if (!exists) {
         const id = await convex.mutation(
           api.unifiedInsiderTrading.insertFromNse,
           {
-            symbol: row.symbol!,
-            companyName: row.companyName!,
-            acquirerOrDisposer: row.acquirerOrDisposer!,
-            regulation: row.regulation!,
-            securityType: row.securityType!,
-            quantity: row.quantity!,
-            transactionType: row.transactionType!,
-            transactionDate: row.disclosedAt!,
+            symbol: row.symbol,
+            companyName: row.companyName,
+            acquirerOrDisposer: row.acquirerOrDisposer,
+            regulation: row.regulation,
+            securityType: row.securityType,
+            quantity: row.quantity,
+            transactionType: row.transactionType,
+            transactionDate: row.disclosedAt,
             xbrlLink: row.xbrlLink,
           }
         );
-        await convex.action(api.notification.notifyInsiderInsert, { id });
+
+        newRecord.push({
+          symbol: row.symbol,
+          companyName: row.companyName,
+          acquirerOrDisposer: row.acquirerOrDisposer,
+          regulation: row.regulation,
+          securityType: row.securityType,
+          quantity: row.quantity,
+          transactionType: row.transactionType,
+          disclosedAt: row.disclosedAt,
+          xbrlLink: row.xbrlLink,
+        });
+        // await convex.action(api.notification.notifyInsiderInsert, { id });
       }
+    }
+
+    if (newRecord.length > 0) {
+      await fetch(`${baseUrl}/api/ai/insert-data`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ records: newRecord }),
+      });
     }
 
     console.log(

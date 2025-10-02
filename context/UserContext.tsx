@@ -23,10 +23,10 @@ type UserContextType = {
 const UserContext = createContext<UserContextType>({
   user: null,
   loading: true,
-  signOut: async () => {},
-  signInWithGoogle: async () => {},
-  signUpWithEmail: async () => {},
-  signInWithEmail: async () => {},
+  signOut: async () => { },
+  signInWithGoogle: async () => { },
+  signUpWithEmail: async () => { },
+  signInWithEmail: async () => { },
 });
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
@@ -71,11 +71,26 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signUpWithEmail = async (email: string, password: string, name: string) => {
-    await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { name } },
+   console.log('Attempting signup with:', { email, name }); // Don't log password
+  
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { 
+      data: { name },
+      emailRedirectTo: window.location.origin
+    },
+  });
+  
+  if (error) {
+    console.error('Supabase signup error details:', {
+      message: error.message,
+      status: error.status,
+      error: error
     });
+    throw error;
+  }
+  console.log('Signup successful:', data);
   };
 
   const signInWithEmail = async (email: string, password: string) => {

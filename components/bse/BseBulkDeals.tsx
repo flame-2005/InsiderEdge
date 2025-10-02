@@ -258,7 +258,7 @@ export default function BseBulkDealsCard() {
               </div>
 
               {/* Content */}
-              <div className="p-5 space-y-3">
+              <div className="px-5 py-2">
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-600 text-sm">Client</span>
                   <span className="font-semibold text-gray-900 text-sm truncate ml-2 max-w-[60%]" title={deal.clientName}>

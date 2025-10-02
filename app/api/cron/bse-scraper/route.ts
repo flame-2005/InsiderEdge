@@ -44,6 +44,7 @@ export async function GET(req: NextRequest) {
     // Insert new records into Convex
     let insertedCount = 0;
     let skippedCount = 0;
+    const newRecord = [];
 
     for (const row of rows) {
       try {
@@ -66,7 +67,31 @@ export async function GET(req: NextRequest) {
         );
 
         if (!existsUnion) {
-          const id = await convex.mutation(api.unifiedInsiderTrading.insertFromBse, {
+          const id = await convex.mutation(
+            api.unifiedInsiderTrading.insertFromBse,
+            {
+              scripCode: row.scripCode,
+              companyName: row.companyName,
+              personName: row.personName,
+              category: row.category,
+              securityType: row.securityType,
+              numberOfSecurities: row.numberOfSecurities,
+              transactionType: row.transactionType,
+              transactionDate: row.dateOfIntimation,
+              transactionDateText: row.dateOfIntimationText,
+              securitiesHeldPreTransaction: row.securitiesHeldPreTransaction,
+              securitiesHeldPrePercentage: row.securitiesHeldPrePercentage,
+              valuePerSecurity: row.valuePerSecurity,
+              securitiesHeldPostTransaction: row.securitiesHeldPostTransaction,
+              securitiesHeldPostPercentage: row.securitiesHeldPostPercentage,
+              modeOfAcquisition: row.modeOfAcquisition,
+              derivativeType: row.derivativeType,
+              buyValueUnits: row.buyValueUnits,
+              sellValueUnits: row.sellValueUnits,
+            }
+          );
+
+          newRecord.push({
             scripCode: row.scripCode,
             companyName: row.companyName,
             personName: row.personName,
@@ -87,7 +112,7 @@ export async function GET(req: NextRequest) {
             sellValueUnits: row.sellValueUnits,
           });
 
-          await convex.action(api.notification.notifyInsiderInsert, { id });
+          // await convex.action(api.notification.notifyInsiderInsert, { id });
         }
 
         if (!exists) {
@@ -122,6 +147,14 @@ export async function GET(req: NextRequest) {
       } catch (err) {
         console.error(`[CRON] Error processing row:`, err);
       }
+    }
+
+    if (newRecord.length > 0) {
+      await fetch(`${baseUrl}/api/ai/insert-data`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ records: newRecord }),
+      });
     }
 
     console.log(
