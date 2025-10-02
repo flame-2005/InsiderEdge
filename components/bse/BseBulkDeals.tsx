@@ -1,42 +1,42 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useContext } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Search, TrendingUp, TrendingDown, Filter, ArrowUpDown, Eye, EyeOff } from "lucide-react";
+import { useBseTrades } from "@/context/BseTradesContext";
 
 export default function BseBulkDealsCard() {
-  const deals = useQuery(api.bseBulkDeals.getAll);
+  const {BseBulkDeals} = useBseTrades()
   
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterType, setFilterType] = useState("all"); // all, B, S
-  const [sortBy, setSortBy] = useState("date"); // date, value, quantity
+  const [filterType, setFilterType] = useState("all");
+  const [sortBy, setSortBy] = useState("date");
   const [sortOrder, setSortOrder] = useState("desc");
   const [minValue, setMinValue] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
-  // Calculate statistics
   const stats = useMemo(() => {
-    if (!deals) return null;
+    if (!BseBulkDeals) return null;
     
-    const buyDeals = deals.filter(d => d.dealType === "B");
-    const sellDeals = deals.filter(d => d.dealType === "S");
+    const buyDeals = BseBulkDeals.filter(d => d.dealType === "B");
+    const sellDeals = BseBulkDeals.filter(d => d.dealType === "S");
     
     return {
-      totalDeals: deals.length,
+      totalDeals: BseBulkDeals.length,
       buyDeals: buyDeals.length,
       sellDeals: sellDeals.length,
       totalBuyValue: buyDeals.reduce((sum, d) => sum + d.totalValue, 0),
       totalSellValue: sellDeals.reduce((sum, d) => sum + d.totalValue, 0),
-      avgDealSize: deals.reduce((sum, d) => sum + d.totalValue, 0) / deals.length,
+      avgDealSize: BseBulkDeals.reduce((sum, d) => sum + d.totalValue, 0) / BseBulkDeals.length,
     };
-  }, [deals]);
+  }, [BseBulkDeals]);
 
-  // Filter and sort deals
+  // Filter and sort BseBulkDeals
   const filteredDeals = useMemo(() => {
-    if (!deals) return [];
+    if (!BseBulkDeals) return [];
     
-    const filtered = deals.filter(deal => {
+    const filtered = BseBulkDeals.filter(deal => {
       const matchesSearch = 
         deal.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         deal.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -49,7 +49,7 @@ export default function BseBulkDealsCard() {
       return matchesSearch && matchesType && matchesMinValue;
     });
 
-    // Sort deals
+    // Sort BseBulkDeals
     filtered.sort((a, b) => {
       let comparison = 0;
       
@@ -69,53 +69,51 @@ export default function BseBulkDealsCard() {
     });
 
     return filtered;
-  }, [deals, searchTerm, filterType, sortBy, sortOrder, minValue]);
+  }, [BseBulkDeals, searchTerm, filterType, sortBy, sortOrder, minValue]);
 
-  if (deals === undefined) {
+  if (BseBulkDeals === undefined) {
     return (
       <div className="flex items-center justify-center p-12">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading bulk deals...</p>
+          <p className="text-gray-600 font-medium">Loading bulk BseBulkDeals...</p>
         </div>
       </div>
     );
   }
 
-  if (deals.length === 0) {
+  if (BseBulkDeals.length === 0) {
     return (
       <div className="text-center p-12 bg-gray-50 rounded-2xl">
         <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
           <TrendingUp className="w-10 h-10 text-gray-400" />
         </div>
-        <p className="text-gray-500 text-lg">No bulk deals found</p>
+        <p className="text-gray-500 text-lg">No bulk BseBulkDeals found</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-6 p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl">
-      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
             <TrendingUp className="w-8 h-8 text-blue-600" />
-            BSE Bulk Deals
+            BSE Bulk BseBulkDeals
           </h2>
           <p className="text-gray-600 mt-1">Real-time bulk transaction insights</p>
         </div>
       </div>
 
-      {/* Statistics Cards */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <p className="text-gray-600 text-sm font-medium">Total Deals</p>
+            <p className="text-gray-600 text-sm font-medium">Total BseBulkDeals</p>
             <p className="text-2xl font-bold text-gray-900 mt-1">{stats.totalDeals}</p>
           </div>
           <div className="bg-green-50 rounded-xl p-4 shadow-sm border border-green-100">
             <p className="text-green-700 text-sm font-medium flex items-center gap-1">
-              <TrendingUp className="w-4 h-4" /> Buy Deals
+              <TrendingUp className="w-4 h-4" /> Buy BseBulkDeals
             </p>
             <p className="text-2xl font-bold text-green-700 mt-1">{stats.buyDeals}</p>
             <p className="text-xs text-green-600 mt-1">
@@ -124,7 +122,7 @@ export default function BseBulkDealsCard() {
           </div>
           <div className="bg-red-50 rounded-xl p-4 shadow-sm border border-red-100">
             <p className="text-red-700 text-sm font-medium flex items-center gap-1">
-              <TrendingDown className="w-4 h-4" /> Sell Deals
+              <TrendingDown className="w-4 h-4" /> Sell BseBulkDeals
             </p>
             <p className="text-2xl font-bold text-red-700 mt-1">{stats.sellDeals}</p>
             <p className="text-xs text-red-600 mt-1">
@@ -140,7 +138,6 @@ export default function BseBulkDealsCard() {
         </div>
       )}
 
-      {/* Search and Filters */}
       <div className="bg-white rounded-xl p-4 shadow-sm space-y-4">
         <div className="flex flex-col md:flex-row gap-3">
           {/* Search */}
@@ -155,7 +152,6 @@ export default function BseBulkDealsCard() {
             />
           </div>
 
-          {/* Filter Toggle */}
           <button
             onClick={() => setShowFilters(!showFilters)}
             className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium text-gray-700 flex items-center gap-2 transition-colors"
@@ -175,7 +171,7 @@ export default function BseBulkDealsCard() {
                 onChange={(e) => setFilterType(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
               >
-                <option value="all">All Deals</option>
+                <option value="all">All BseBulkDeals</option>
                 <option value="B">Buy Only</option>
                 <option value="S">Sell Only</option>
               </select>
@@ -216,18 +212,16 @@ export default function BseBulkDealsCard() {
         )}
       </div>
 
-      {/* Results Count */}
       <div className="flex justify-between items-center">
         <p className="text-sm text-gray-600">
           Showing <span className="font-semibold">{filteredDeals.length}</span> of{" "}
-          <span className="font-semibold">{deals.length}</span> deals
+          <span className="font-semibold">{BseBulkDeals.length}</span> BseBulkDeals
         </p>
       </div>
 
-      {/* Deals Grid */}
       {filteredDeals.length === 0 ? (
         <div className="text-center p-12 bg-white rounded-xl">
-          <p className="text-gray-500">No deals match your filters</p>
+          <p className="text-gray-500">No BseBulkDeals match your filters</p>
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -236,7 +230,6 @@ export default function BseBulkDealsCard() {
               key={deal._id}
               className="bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-200 group"
             >
-              {/* Header with gradient */}
               <div
                 className={`p-4 ${
                   deal.dealType === "B"
@@ -257,7 +250,6 @@ export default function BseBulkDealsCard() {
                 </div>
               </div>
 
-              {/* Content */}
               <div className="px-5 py-2">
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-600 text-sm">Client</span>

@@ -27,7 +27,6 @@ export async function GET(req: NextRequest) {
 
     const rows:BulkDealRow[] = [];
 
-    // Find the table and iterate through rows
     $("#ContentPlaceHolder1_gvbulk_deals tbody tr.tdcolumn").each((i, elem) => {
       const $row = $(elem);
       const cells = $row.find("td");

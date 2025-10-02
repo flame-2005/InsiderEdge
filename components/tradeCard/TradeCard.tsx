@@ -250,32 +250,3 @@ export function TradeCard({ trade }: TradeCardProps) {
         </>
     );
 }
-
-// Demo component
-export default function TradeCardDemo() {
-    const sampleTrade: BseInsiderTrade = {
-        personName: "Rajesh Kumar",
-        category: "Promoter",
-        companyName: "Tech Innovations Ltd",
-        transactionType: "Acquisition",
-        numberOfSecurities: 50000,
-        securityType: "Equity Shares",
-        valuePerSecurity: 7500000,
-        scripCode: "TECHIN",
-        modeOfAcquisition: "Market Purchase",
-        dateOfIntimation: "2025-09-28T10:30:00",
-        securitiesHeldPostTransaction: 2500000,
-        securitiesHeldPostPercentage: 12.5,
-        securitiesHeldPreTransaction: 2450000
-    };
-
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8">
-            <div className="max-w-3xl mx-auto">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Insider Trade Card</h1>
-                <p className="text-gray-600 mb-8">Hover over the card to see detailed statistics</p>
-                <TradeCard trade={sampleTrade} />
-            </div>
-        </div>
-    );
-}

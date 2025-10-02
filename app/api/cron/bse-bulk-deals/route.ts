@@ -9,7 +9,6 @@ import { api } from "@/convex/_generated/api";
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 export async function GET(req: NextRequest) {
-  // Verify cron secret
   const authHeader = req.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -45,7 +44,6 @@ export async function GET(req: NextRequest) {
 
     for (const row of rows) {
       try {
-        // Check if record already exists
         const exists = await convex.query(api.bseBulkDeals.checkExists, {
           scripCode: row.scripCode,
           clientName: row.clientName,
@@ -54,7 +52,6 @@ export async function GET(req: NextRequest) {
         });
 
         if (!exists) {
-          // Insert new record
           await convex.mutation(api.bseBulkDeals.insert, {
             scripCode: row.scripCode,
             companyName: row.companyName,

@@ -143,14 +143,12 @@ export async function POST(
   try {
     console.log("[AI Insert] Starting incremental data insertion...");
 
-    // Validate environment variables
     if (!process.env.NEXT_PUBLIC_PINECONE_INDEX) {
       throw new Error(
         "NEXT_PUBLIC_PINECONE_INDEX environment variable is not set"
       );
     }
 
-    // Get data from request body
     const body = await req.json();
     const records = body.records as UnifiedInsiderTradingRecord[];
 
@@ -163,11 +161,9 @@ export async function POST(
 
     console.log(`[AI Insert] Received ${records.length} records to process`);
 
-    // Get Pinecone index
     const indexName = process.env.NEXT_PUBLIC_PINECONE_INDEX!;
     const index = pinecone.Index<TransactionMetadata>(indexName);
 
-    // Embedding model
     const embeddingModel: GenerativeModel = genAI.getGenerativeModel({
       model: "gemini-embedding-001",
     });
@@ -175,7 +171,6 @@ export async function POST(
     let insertedCount = 0;
     let skippedCount = 0;
 
-    // Group records by date
     const recordsByDate = new Map<string, UnifiedInsiderTradingRecord[]>();
 
     for (const record of records) {
@@ -195,7 +190,6 @@ export async function POST(
       recordsByDate.get(dateKey)!.push(record);
     }
 
-    // Process each date group
     for (const [date, dateRecords] of recordsByDate) {
       if (date === "unknown") {
         console.log(
@@ -229,7 +223,6 @@ export async function POST(
             continue;
           }
 
-          // Create metadata
           const metadata: TransactionMetadata = {
             date: String(date),
             recordCount: insertedCount,
@@ -251,7 +244,6 @@ export async function POST(
             summary: transactionText,
           };
 
-          // Create unique ID using timestamp and scrip code
           const vectorId = `txn-${record.scripCode}-${record.createdAt || Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
           vectors.push({
@@ -262,7 +254,6 @@ export async function POST(
 
           insertedCount++;
 
-          // Batch upsert every 100 vectors
           if (vectors.length >= 100) {
             console.log(
               `[AI Insert] Upserting batch of ${vectors.length} to namespace: ${namespace}`
@@ -277,7 +268,6 @@ export async function POST(
         }
       }
 
-      // Upsert remaining vectors for this date
       if (vectors.length > 0) {
         console.log(
           `[AI Insert] Upserting final ${vectors.length} vectors to namespace: ${namespace}`

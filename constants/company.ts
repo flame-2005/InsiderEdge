@@ -47,6 +47,21 @@ export type BseInsiderTrade = {
   createdAt: number;
 };
 
+export type BseBulkDeals = {
+  _id: string;
+  _creationTime: number;
+  scripCode: string;
+  companyName: string;
+  createdAt: number;
+  quantity: number;
+  clientName: string;
+  dealType: string;
+  price: number;
+  totalValue: number;
+  date: string | null;
+  dateText: string;
+};
+
 export type NseInsiderTrade = {
   _id: string;
   _creationTime: number;
@@ -89,27 +104,27 @@ export type NseTransformedTrade = {
 };
 
 export type BulkDealRow = {
-  date: string | null;       
-  dateText: string;          
-  scripCode: string;        
-  companyName: string;       
-  clientName: string;       
-  dealType: "B" | "S" | ""; 
-  quantity: number;          
-  price: number;             
-  totalValue: number;        
+  date: string | null;
+  dateText: string;
+  scripCode: string;
+  companyName: string;
+  clientName: string;
+  dealType: "B" | "S" | "";
+  quantity: number;
+  price: number;
+  totalValue: number;
 };
 
-export type CorporateActionRow  = {
+export type CorporateActionRow = {
   scripCode: string | null;
   companyName: string | null;
   field2: string | null;
   purpose: string | null;
-  exDate: string | null;  
-  exDateText: string | null;   
+  exDate: string | null;
+  exDateText: string | null;
   recordDate: string | null;
   bcStartDate: string | null;
   bcEndDate: string | null;
   ndStartDate: string | null;
   ndEndDate: string | null;
-}
+};

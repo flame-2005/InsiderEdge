@@ -177,7 +177,6 @@ export async function GET(req: NextRequest) {
       success: true,
       totalScraped: rows.length,
       sentToInsert: trades.length,
-      // inserted/skipped are unknown unless the mutation returns them; see note below.
       via: data.via || "page",
       timestamp: new Date().toISOString(),
     });

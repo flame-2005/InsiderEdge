@@ -128,14 +128,12 @@ export async function POST(
   try {
     console.log("[AI Processing] Starting data processing...");
 
-    // Validate environment variables
     if (!process.env.NEXT_PUBLIC_PINECONE_INDEX) {
       throw new Error(
         "NEXT_PUBLIC_PINECONE_INDEX_NAME environment variable is not set"
       );
     }
 
-    // Get all unified trading data from Convex
     const allData = (await convex.query(
       api.unifiedInsiderTrading.getAll
     )) as UnifiedInsiderTradingRecord[];
@@ -147,11 +145,9 @@ export async function POST(
       );
     }
 
-    // Group data by date (normalized to DD/MM/YYYY)
     const dataByDate: DateGroupedRecords = new Map();
 
     for (const record of allData) {
-      // Use transactionDateText if available, otherwise normalize transactionDate
       let dateKey: DateKey = record.transactionDateText || "";
 
       if (!dateKey && record.transactionDate) {
@@ -172,21 +168,17 @@ export async function POST(
       `[AI Processing] Grouped data into ${dataByDate.size} unique dates`
     );
 
-    // Get Pinecone index with explicit name
     const indexName = process.env.NEXT_PUBLIC_PINECONE_INDEX;
     console.log(`[AI Processing] Using Pinecone index: ${indexName}`);
     const index = pinecone.Index(indexName);
 
-    // Embedding model (Gemini)
     const embeddingModel: GenerativeModel = genAI.getGenerativeModel({
       model: "gemini-embedding-001",
     });
 
     let totalProcessed = 0;
 
-    // Process each date group separately in its own namespace
     for (const [date, records] of dataByDate) {
-      // Skip unknown dates
       if (date === "unknown") {
         console.log(
           `[AI Processing] Skipping unknown date with ${records.length} records`
@@ -198,17 +190,14 @@ export async function POST(
         `[AI Processing] Processing ${records.length} records for date: ${date}`
       );
 
-      // Use date as namespace (replace slashes with hyphens for valid namespace)
       const namespace = date.replace(/\//g, "-");
       const vectors: PineconeVector[] = [];
       let recordCount = 0;
 
       // Create a vector for each individual transaction
       for (const record of records) {
-        // Create text summary for this transaction
         const transactionText = createTransactionSummary(record);
 
-        // Generate embedding
         try {
           const embeddingResult = (await embeddingModel.embedContent(
             transactionText
@@ -251,7 +240,6 @@ export async function POST(
 
           recordCount++;
 
-          // Batch upsert every 100 vectors within this namespace
           if (vectors.length >= 100) {
             console.log(
               `[AI Processing] Upserting batch of ${vectors.length} to namespace: ${namespace}`
@@ -266,7 +254,6 @@ export async function POST(
         }
       }
 
-      // Upsert remaining vectors for this date's namespace
       if (vectors.length > 0) {
         console.log(
           `[AI Processing] Upserting final ${vectors.length} vectors to namespace: ${namespace}`
@@ -301,10 +288,6 @@ export async function POST(
     );
   }
 }
-
-/* =========================
- * Helpers
- * =======================*/
 
 // Create summary for individual transaction
 function createTransactionSummary(record: UnifiedInsiderTradingRecord): string {

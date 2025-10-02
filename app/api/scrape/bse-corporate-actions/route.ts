@@ -13,22 +13,19 @@ export async function GET(req: NextRequest) {
     console.log("[BSE Corporate Actions Scraper] Starting...");
 
     const url = "https://www.bseindia.com/corporates/corporates_act.html";
-    
-    // Launch Puppeteer browser
+
     browser = await puppeteer.launch({
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
 
     const page = await browser.newPage();
-    
-    // Set viewport and user agent
+
     await page.setViewport({ width: 1920, height: 1080 });
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
 
     console.log("[BSE Corporate Actions] Navigating to:", url);
-    
-    // Navigate to the page and wait for the table to load
+
     await page.goto(url, { 
       waitUntil: 'networkidle2',
       timeout: 60000 
@@ -39,7 +36,6 @@ export async function GET(req: NextRequest) {
 
     console.log("[BSE Corporate Actions] Page loaded, extracting data...");
 
-    // Extract data from the table
     const rows: CorporateActionRow[] = await page.evaluate(() => {
       const results:CorporateActionRow[] = [];
       const tableRows = document.querySelectorAll('table.mGrid tbody tr.TTRow');
@@ -48,7 +44,6 @@ export async function GET(req: NextRequest) {
         const cells = row.querySelectorAll('td');
         
         if (cells.length >= 10) {
-          // Extract scrip code from link
           const scripCodeLink = cells[0].querySelector('a');
           let scripCode = null;
           if (scripCodeLink) {
@@ -94,7 +89,6 @@ export async function GET(req: NextRequest) {
       let parsedExDate = null;
       if (row.exDateText && row.exDateText.trim() !== '') {
         try {
-          // Try parsing different date formats
           const dateStr = row.exDateText;
           // Handle formats like "03 Nov 2025" or "03/11/2025"
           parsedExDate = new Date(dateStr).toISOString();

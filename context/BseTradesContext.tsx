@@ -3,10 +3,11 @@
 import React, { createContext, useContext, ReactNode } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { BseInsiderTrade } from "@/constants/company";
+import { BseBulkDeals, BseInsiderTrade } from "@/constants/company";
 
 type BseTradesContextType = {
   trades: BseInsiderTrade[] | undefined;
+  BseBulkDeals : BseBulkDeals[] | undefined;
   isLoading: boolean;
 };
 
@@ -14,10 +15,12 @@ const BseTradesContext = createContext<BseTradesContextType | undefined>(undefin
 
 export function BseTradesProvider({ children }: { children: ReactNode }) {
   const trades = useQuery(api.bseInsiderTrading.getRecent24Hours);
+  const BseBulkDeals = useQuery(api.bseBulkDeals.getAll);
   
   return (
     <BseTradesContext.Provider value={{ 
       trades, 
+      BseBulkDeals,
       isLoading: trades === undefined 
     }}>
       {children}

@@ -13,7 +13,6 @@ const LIST_URL = "https://www.bseindia.com/corporates/Insider_Trading_new.aspx?e
 function parseBseDate(s?: string | null) {
   if (!s) return null;
   const trimmed = s.trim();
-  // Handle date ranges like "26/09/2025 26/09/2025" - take first date
   const firstDate = trimmed.split(" ")[0];
   if (!firstDate) return null;
   
@@ -234,7 +233,6 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const scripCode = searchParams.get("scripCode") || undefined;
   
-  // BSE uses different query params for filtering
   const url = scripCode
     ? `${LIST_URL}&scripcode=${encodeURIComponent(scripCode)}`
     : LIST_URL;

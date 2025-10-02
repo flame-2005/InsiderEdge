@@ -19,11 +19,9 @@ async function findBestNamespace(
   index: Index,
   targetDate?: string
 ): Promise<string | null> {
-  // If date is provided, check if that specific namespace has data
   if (targetDate) {
     const namespace = targetDate.replace(/\//g, "-");
 
-    // Get stats for the entire index first to see if namespace exists
     try {
       const indexStats = await index.describeIndexStats();
       const namespaceStats = indexStats.namespaces?.[namespace];
@@ -45,13 +43,10 @@ async function findBestNamespace(
     } catch (e) {
       console.warn(`[AI Query] Error checking namespace ${namespace}:`, e);
     }
-    // Fall through to check recent dates
   }
 
-  // Try current date and fall back to previous days
   const today = new Date();
 
-  // Get all namespace stats once
   let indexStats;
   try {
     indexStats = await index.describeIndexStats();
@@ -69,7 +64,6 @@ async function findBestNamespace(
     const year = checkDate.getFullYear();
     const namespace = `${day}-${month}-${year}`;
 
-    // Check if this namespace exists in the stats
     const namespaceStats = indexStats.namespaces?.[namespace];
 
     if (
@@ -107,7 +101,6 @@ export async function POST(req: NextRequest) {
 
     console.log(`[AI Query] Processing query: ${query}`);
 
-    // Generate embedding for the query
     const embeddingModel = genAI.getGenerativeModel({
       model: "gemini-embedding-001",
     });
@@ -119,10 +112,8 @@ export async function POST(req: NextRequest) {
       sample: queryEmbedding.slice(0, 3),
     });
 
-    // Get index and check stats
     const index = pinecone.Index(process.env.NEXT_PUBLIC_PINECONE_INDEX!);
 
-    // Check index stats for debugging
     try {
       const stats = await index.describeIndexStats();
       console.log("[AI Query] Index stats:", {
@@ -133,7 +124,6 @@ export async function POST(req: NextRequest) {
       console.warn("[AI Query] Could not fetch index stats:", statsError);
     }
 
-    // Find the best namespace to query
     const namespace = await findBestNamespace(index, date);
 
     if (!namespace) {
@@ -148,7 +138,6 @@ export async function POST(req: NextRequest) {
 
     console.log(`[AI Query] Using namespace: ${namespace}`);
 
-    // Search Pinecone with the found namespace
     const searchParams = {
       vector: queryEmbedding,
       topK: 10,
@@ -164,7 +153,6 @@ export async function POST(req: NextRequest) {
       hasMetadata: searchResults.matches?.some((m) => m.metadata) || false,
     });
 
-    // Check if we have any matches at all
     if (!searchResults.matches || searchResults.matches.length === 0) {
       return NextResponse.json(
         {
@@ -180,7 +168,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Filter matches with metadata
     const validMatches = searchResults.matches.filter(
       (match) => match.metadata
     );
@@ -200,15 +187,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Prepare context from search results
     const context = validMatches
       .map((match, idx) => {
         const m = match.metadata!;
-        // If summary exists in metadata, use it
         if (m.summary) {
           return `Transaction ${idx + 1}:\n${m.summary}`;
         }
-        // Otherwise reconstruct from available fields
         return `Transaction ${idx + 1}:
 Transaction Type: ${m.transactionType || "Unknown"}
 Person: ${m.personName || "Unknown"}
