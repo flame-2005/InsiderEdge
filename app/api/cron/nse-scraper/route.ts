@@ -160,7 +160,7 @@ export async function GET(req: NextRequest) {
           disclosedAt: row.disclosedAt,
           xbrlLink: row.xbrlLink,
         });
-        // await convex.action(api.notification.notifyInsiderInsert, { id });
+        await convex.action(api.notification.notifyInsiderInsert, { id });
       }
     }
 

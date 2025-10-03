@@ -150,7 +150,6 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
-      {/* Decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
         <div className="absolute top-40 right-10 w-72 h-72 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
@@ -159,9 +158,8 @@ export default function AuthPage() {
 
       <div className="w-full max-w-md relative z-10">
 
-        {/* Auth Card */}
         <div className="bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-white/20 space-y-6">
-          {/* Tab Switcher */}
+
           <div className="flex rounded-xl bg-gray-100 p-1">
             <button
               type="button"
@@ -331,8 +329,6 @@ export default function AuthPage() {
             Sign in with Google
           </button>
         </div>
-
-        {/* Footer */}
         <p className="mt-6 text-center text-xs text-gray-600">
           By continuing, you agree to our Terms of Service and Privacy Policy
         </p>
