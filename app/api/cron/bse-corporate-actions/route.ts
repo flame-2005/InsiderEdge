@@ -17,7 +17,9 @@ export async function GET(req: NextRequest) {
   try {
     console.log("[CRON] Starting BSE Corporate Actions scraper...");
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+     const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const scrapeRes = await fetch(
       `${baseUrl}/api/scrape/bse-corporate-actions`,
       {
