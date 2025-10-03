@@ -72,9 +72,9 @@ export default function Home() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Test Cron Button */}
-        <div className="flex justify-center">
+        {/* <div className="flex justify-center">
           <TestCronButton />
-        </div>
+        </div> */}
 
         {/* Tab Navigation */}
         <div className="flex justify-center">
