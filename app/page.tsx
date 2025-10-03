@@ -32,7 +32,7 @@ export default function Home() {
           <div className="flex items-center justify-between">
             {/* Logo/Title */}
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br hidden md:block from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform">
+              <div className="w-12 h-12 bg-gradient-to-br hidden md:flex from-blue-600 to-indigo-600 rounded-2xl items-center justify-center shadow-lg transform hover:scale-105 transition-transform">
                 <TrendingUp className="w-7 h-7 text-white " />
               </div>
               <div>
