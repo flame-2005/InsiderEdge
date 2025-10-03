@@ -11,7 +11,8 @@ A fast, trustworthy insider-trading signal platform that ingests disclosures fro
 - [Environment Variables](#environment-variables)
 - [Development](#development-run-locally)
 - [Convex Setup](#convex-schema-codegen--dev)
-- [Supabase Setup](#supabase-auth--smtp-dev-vs-prod)
+- [Supabase Setup](#supabase-auth-setup)
+- [AI Chatbot Setup](#ai-chatbot-setup-gemini--pinecone)
 - [Crawlers & Scraping](#crawlers--scraping-strategy)
 - [Cron / Scheduling](#cron--scheduling-every-5-minutes)
 - [Notifications](#notifications-observer-pattern)
@@ -31,8 +32,9 @@ A fast, trustworthy insider-trading signal platform that ingests disclosures fro
 - **User authentication** via Supabase (email/password + OAuth Google)
 - **Observer pattern** for notifications: when `unifiedInsiderTrading` gets new rows, matching users are emailed
 - **Configurable alerts** (future): per-symbol subscriptions, thresholds, digesting
+- **AI-powered chatbot** using Gemini and Pinecone vector embeddings for intelligent query responses
 - **Live frontend** (Next.js + Convex react) with reactive queries
-- **Dev & prod friendly** email flow (Supabase built-in SMTP for dev, custom SMTP / Resend for prod)
+- **Email notifications** via Resend for reliable delivery
 
 ## Architecture (high level)
 
@@ -43,7 +45,11 @@ Convex mutation (upsert into unifiedInsiderTrading)
     ↓ event enqueue (or immediate notify)
 Notification Dispatcher (worker) → Observer modules (email/push/webhook)
 Convex DB (tables: unifiedInsiderTrading, bseInsiderTrading, nseInsiderTrading, users, alerts)
-Frontend (Next.js + Convex react) — live feed, alert UI, auth via Supabase
+    ↓ data indexing
+Pinecone Vector Store (embeddings for semantic search)
+    ↓ query
+AI Chatbot (Gemini) ← User queries
+Frontend (Next.js + Convex react) — live feed, alert UI, chatbot, auth via Supabase
 ```
 
 ## Technology Stack
@@ -55,7 +61,8 @@ Frontend (Next.js + Convex react) — live feed, alert UI, auth via Supabase
 | **Auth** | Supabase Auth (email/password + Google OAuth) |
 | **Scraper** | Playwright (`pwrequest` fallback) or direct JSON/XHR |
 | **PDF Parsing** | PyMuPDF / Camelot / Tesseract (optional) |
-| **Email** | Supabase SMTP (dev) / Nodemailer / Resend / SendGrid (prod) |
+| **Email** | Resend |
+| **AI/ML** | Google Gemini API, Pinecone Vector Database |
 | **Queue** | Redis / SQS (optional) — Convex `event_queue` table for small scale |
 
 ## Getting Started — Quick Setup
@@ -66,7 +73,9 @@ Frontend (Next.js + Convex react) — live feed, alert UI, auth via Supabase
 - npm or pnpm
 - Convex account / `convex` CLI configured
 - Supabase project (for auth) — get URL + anon key
-- (Optional) Resend / SMTP credentials
+- Resend API key
+- Google Gemini API key
+- Pinecone account with API key and environment
 
 ### Installation
 
@@ -104,15 +113,14 @@ NEXT_PUBLIC_CONVEX_URL=https://<your-convex-deployment-url>
 CONVEX_SERVER_URL=http://localhost:8080
 CONVEX_DEPLOY_KEY=__CONVEX_DEPLOY_KEY__
 
-# SMTP (dev uses Supabase built-in; for prod provide real SMTP)
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_USER=your@smtp.user
-SMTP_PASS=supersecret
-SMTP_FROM="InsiderEdge <no-reply@yourdomain.com>"
-
-# Resend (optional)
+# Resend
 RESEND_API_KEY=your_resend_api_key
+
+# AI Chatbot
+GEMINI_API_KEY=your_gemini_api_key
+PINECONE_API_KEY=your_pinecone_api_key
+PINECONE_ENVIRONMENT=your_pinecone_environment
+PINECONE_INDEX_NAME=insideredge-embeddings
 
 # Other
 NODE_ENV=development
@@ -149,19 +157,74 @@ PORT=3000
   ```
 - Server functions / mutations live in `convex/` (or `convex/functions`) and are compiled and available in the generated server helper `convex/_generated/server`
 
-## Supabase: Auth & SMTP (Dev vs Prod)
+## Supabase: Auth Setup
 
 ### Configuration
 
 - In Supabase dashboard → **Auth** → **Settings**: configure OAuth providers (Google), and Email template options
-- **Development:** use Supabase built-in SMTP (Postmark sandbox). No SMTP env required
-- **Production:** configure Custom SMTP or use an external provider (SendGrid, Postmark, SES). Provide SMTP envs from `.env.local`
 
 ### Auth Flows
 
 - **Email/password:** `supabase.auth.signUp()` / `supabase.auth.signInWithPassword()`
 - **OAuth (Google):** `supabase.auth.signInWithOAuth({ provider: 'google' })`
 - **Sync user to Convex** by calling `api.users.upsertUser` mutation from client or server on auth event
+
+## AI Chatbot Setup (Gemini & Pinecone)
+
+### Overview
+
+The chatbot system provides intelligent responses to user queries about insider trading data using:
+- **Gemini API** for natural language understanding and response generation
+- **Pinecone** for semantic search using vector embeddings
+- **RAG (Retrieval Augmented Generation)** pattern for accurate, context-aware responses
+
+### Setup Steps
+
+1. **Get Gemini API Key:**
+   - Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - Create a new API key
+   - Add to `.env.local` as `GEMINI_API_KEY`
+
+2. **Setup Pinecone:**
+   - Sign up at [Pinecone](https://www.pinecone.io/)
+   - Create a new index with the following settings:
+     - **Dimensions:** 768 (for Gemini embeddings)
+     - **Metric:** cosine
+     - **Index Name:** `insideredge-embeddings`
+   - Get your API key and environment from the dashboard
+   - Add `PINECONE_API_KEY`, `PINECONE_ENVIRONMENT`, and `PINECONE_INDEX_NAME` to `.env.local`
+
+3. **Embedding Strategy:**
+   - New insider trading records are automatically embedded and stored in Pinecone
+   - Embeddings capture semantic meaning of company names, trade types, and amounts
+   - User queries are embedded and matched against the vector store
+
+### Usage Example
+
+```typescript
+// Client-side chatbot interaction
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+
+const sendMessage = useMutation(api.chatbot.sendMessage);
+
+const response = await sendMessage({ 
+  message: "Show me recent insider trades for Reliance",
+  userId: currentUser.id 
+});
+```
+
+### Chatbot Features
+
+- **Semantic search** across all insider trading records
+- **Context-aware responses** using RAG pattern
+- **Multi-turn conversations** with conversation history
+- **Real-time data** integration with live trading data
+- **Natural language queries** like:
+  - "What are the latest insider purchases in tech sector?"
+  - "Show me all sales by promoters this week"
+  - "Which companies have high insider buying activity?"
+
 
 ## Crawlers & Scraping Strategy
 
@@ -235,7 +298,7 @@ Implemented in Convex mutation (or in dispatcher):
 - Insert into `unifiedInsiderTrading`
 - Query `users` (or `alerts`) to compute matches
 - Insert a `notifications` record for audit
-- Enqueue or send email via SMTP/Resend
+- Send email via Resend API
 
 For scale, use an external queue (SQS / Redis streams) so email sending happens outside Convex mutation.
 
@@ -263,12 +326,15 @@ Then a worker processes `eventQueue`, queries `alerts`, and calls observers (Ema
 
 - `GET /api/scrape/nse?symbol=RELIANCE` — scrapes NSE, returns parsed rows
 - `GET /api/cron/nse` — cron trigger to run ingestion & upsert to Convex
+- `POST /api/chatbot` — send message to AI chatbot, get intelligent response
 
 ### Convex Mutations
 
 - `api.nseInsider.insertTrades({ trades })`
 - `api.unifiedInsider.insertTrade({...})`
 - `api.users.upsertUser({ supabaseId, email, name })`
+- `api.chatbot.sendMessage({ message, userId })`
+- `api.embeddings.upsertEmbedding({ tradeId, embedding })`
 
 ### Client Example (Convex React)
 
@@ -285,7 +351,8 @@ await insertTrades({ trades: parsedRows });
 - **Unit test parsers** using example HTML/PDFs
 - **Synthetic duplicate tests:** ensure dedupe hashing prevents duplicates
 - **Integration test:** run `/api/cron/nse` → check Convex table for new rows → check `notifications` entries
-- **Test email** using Supabase dev SMTP or Resend sandbox
+- **Test email** using Resend test mode
+- **Chatbot testing:** verify embedding generation and semantic search accuracy
 
 ## Troubleshooting / Common Issues
 
@@ -306,11 +373,24 @@ await insertTrades({ trades: parsedRows });
 
 ### 4. Email Deliverability
 
-- For prod, set SPF/DKIM for your sending domain, use verified SMTP like SendGrid/Postmark/SES
+- Verify your sending domain in Resend dashboard
+- Configure SPF and DKIM records for better deliverability
 
 ### 5. Cron Not Running on Vercel Locally
 
 - In dev, simulate cron with `node-cron` or use `curl` to call routes
+
+### 6. Pinecone Connection Issues
+
+- Verify your Pinecone API key and environment are correct
+- Ensure the index exists and has the correct dimensions (768)
+- Check if you've exceeded free tier limits
+
+### 7. Gemini API Rate Limits
+
+- Gemini has rate limits on free tier
+- Implement exponential backoff for retries
+- Consider upgrading to paid tier for production use
 
 ## Project Structure (Short)
 
@@ -318,20 +398,32 @@ await insertTrades({ trades: parsedRows });
 /app                      # Next.js app (pages / app router)
   /api
     /cron/nse/route.ts    # cron endpoint to scrape & upsert
+    /chatbot/route.ts     # chatbot API endpoint
 /lib
-  mailer.ts               # nodemailer / resend wrapper
+  mailer.ts               # Resend email wrapper
+  gemini.ts               # Gemini API client
+  pinecone.ts             # Pinecone vector store client
 /convex
   schema.ts               # Convex schema (single entry)
   nseInsider.ts           # Convex functions (mutations/queries)
   unifiedInsider.ts
   users.ts
+  chatbot.ts              # Chatbot mutations/queries
+  embeddings.ts           # Embedding management
   _generated              # generated by convex codegen
 /src
   /scrapers
     nse.ts                # scraper logic (pwRequest + JSON fetch)
     parse.ts              # parser utilities
+  /ai
+    embeddings.ts         # embedding generation utilities
+    rag.ts                # RAG pipeline implementation
 /context
   UserContext.tsx         # supabase + convex user sync
+/components
+  /chatbot
+    ChatWindow.tsx        # chatbot UI component
+    MessageList.tsx       # message display
 ```
 
 ## Contributing
