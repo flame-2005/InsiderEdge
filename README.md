@@ -26,7 +26,6 @@ A fast, trustworthy insider-trading signal platform that ingests disclosures fro
 ## Features
 
 - **Unified ingestion** of insider trading disclosures from NSE & BSE (scraper + optional vendor APIs)
-- **PDF/table parsing** fallback and JSON/XHR endpoint bootstrapping to avoid headless browser where possible
 - **Deduplication & canonicalization** using signature/hash of key fields
 - **Convex DB storage** with typed server mutations/queries
 - **User authentication** via Supabase (email/password + OAuth Google)
@@ -60,7 +59,6 @@ Frontend (Next.js + Convex react) — live feed, alert UI, chatbot, auth via Sup
 | **Backend DB** | Convex (serverless DB + functions) |
 | **Auth** | Supabase Auth (email/password + Google OAuth) |
 | **Scraper** | Playwright (`pwrequest` fallback) or direct JSON/XHR |
-| **PDF Parsing** | PyMuPDF / Camelot / Tesseract (optional) |
 | **Email** | Resend |
 | **AI/ML** | Google Gemini API, Pinecone Vector Database |
 | **Queue** | Redis / SQS (optional) — Convex `event_queue` table for small scale |
