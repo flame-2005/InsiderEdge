@@ -35,7 +35,10 @@ export async function GET(req: NextRequest) {
   try {
     console.log("[CRON] Starting NSE scraper...");
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
     const url = new URL(`${baseUrl}/api/scrape/nse`);
 
     const incoming = new URL(req.url);

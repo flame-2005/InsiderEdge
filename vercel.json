@@ -2,11 +2,11 @@
   "crons": [
     {
       "path": "/api/cron/bse-scraper",
-      "schedule": "0 0 * * *"
+      "schedule": "*/5 * * * *"
     },
     {
-      "path": "/api/cron/nse-scraper",
-      "schedule": "0 0 * * *"
+      "path": "/api/cron/bse-bulk-deals",
+      "schedule": "*/5 * * * *"
     }
   ]
 }
