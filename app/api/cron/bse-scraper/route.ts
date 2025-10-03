@@ -111,7 +111,7 @@ export async function GET(req: NextRequest) {
             sellValueUnits: row.sellValueUnits,
           });
 
-          // await convex.action(api.notification.notifyInsiderInsert, { id });
+          await convex.action(api.notification.notifyInsiderInsert, { id });
         }
 
         if (!exists) {

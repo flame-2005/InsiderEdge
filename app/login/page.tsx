@@ -15,6 +15,7 @@ export default function AuthPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSignUp, setIsSignUp] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showMagicLinkMessage, setShowMagicLinkMessage] = useState(false);
 
   const router = useRouter();
 
@@ -33,6 +34,8 @@ export default function AuthPage() {
       setError(null);
       setIsSubmitting(true);
       await signUpWithEmail(email, password, name);
+      // Show magic link message after successful signup
+      setShowMagicLinkMessage(true);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -82,6 +85,68 @@ export default function AuthPage() {
   }
 
   if (user) return null;
+
+  // Show magic link confirmation screen
+  if (showMagicLinkMessage) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
+        {/* Decorative elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+          <div className="absolute top-40 right-10 w-72 h-72 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+        </div>
+
+        <div className="w-full max-w-md relative z-10">
+          <div className="bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-white/20 space-y-6 text-center">
+            {/* Success Icon */}
+            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
+              <svg className="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76" />
+              </svg>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Check your email!</h2>
+              <p className="mt-3 text-sm text-gray-600">
+                We&apos;ve sent a magic link to
+              </p>
+              <p className="mt-1 text-base font-semibold text-indigo-600">
+                {email}
+              </p>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <p className="text-sm text-gray-700">
+                Click the link in your email to verify your account and complete the sign-up process.
+              </p>
+            </div>
+
+            <div className="space-y-3 pt-2">
+              <p className="text-xs text-gray-500">
+                Didn&apos;t receive the email? Check your spam folder or
+              </p>
+              <button
+                onClick={() => {
+                  setShowMagicLinkMessage(false);
+                  setEmail("");
+                  setPassword("");
+                  setName("");
+                }}
+                className="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors"
+              >
+                Try again with a different email
+              </button>
+            </div>
+          </div>
+
+          <p className="mt-6 text-center text-xs text-gray-600">
+            Having trouble? Contact our support team
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
@@ -147,6 +212,8 @@ export default function AuthPage() {
               <span>{error}</span>
             </div>
           )}
+
+          
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {isSignUp && (
