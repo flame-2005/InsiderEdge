@@ -11,6 +11,7 @@ const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    console.log("Secret:", process.env.CRON_SECRET);
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
